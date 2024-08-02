@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /**
  * Updated by trungquandev.com's author on August 17 2023
  * YouTube: https://youtube.com/@trungquandev
@@ -45,9 +46,19 @@ const update = async (req, res, next) => {
     next(error);
   }
 };
+const moveCardInTheDifferentColumn = async (req, res, next) => {
+  try {
+    const result = await boardService.moveCardInTheDifferentColumn(req.body);
+
+    res.status(StatusCodes.OK).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const boardController = {
   createNew,
   getDetails,
   update,
+  moveCardInTheDifferentColumn,
 };

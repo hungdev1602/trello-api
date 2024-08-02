@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import Joi from "joi";
 import { ObjectId } from "mongodb";
 import { GET_DB } from "~/config/mongodb";
@@ -22,6 +23,8 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
   updatedAt: Joi.date().timestamp("javascript").default(null),
   _destroy: Joi.boolean().default(false),
 });
+// Chỉ định những trường mà chúng ta ko muốn cho phép cập nhật
+const INVALID_UPDATE_FIELDS = ["_id", "boardId", "createdAt"];
 
 const validateBeforeCreate = async (data) => {
   return await CARD_COLLECTION_SCHEMA.validateAsync(data, {
@@ -60,9 +63,36 @@ const findOneById = async (id) => {
   }
 };
 
+const update = async (cardId, updateData) => {
+  try {
+    // Lọc những field ko muốn cho update linh tinh
+    Object.keys(updateData).forEach((fieldName) => {
+      if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+        delete updateData[fieldName];
+      }
+    });
+
+    // Đối với những dữ liệu ObjectId, biến đổi ở đây
+    if (updateData.columnId)
+      updateData.columnId = new ObjectId(updateData.columnId);
+
+    const result = await GET_DB()
+      .collection(CARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(cardId) },
+        { $set: updateData },
+        { returnDocument: "after" }
+      );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
   createNew,
   findOneById,
+  update,
 };
