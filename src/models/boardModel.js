@@ -120,6 +120,21 @@ const pushColumnOrderIds = async (column) => {
     throw new Error(error);
   }
 };
+const pullColumnOrderIds = async (column) => {
+  try {
+    const result = await GET_DB()
+      .collection(BOARD_COLLECTION_NAME)
+      .findOneAndUpdate(
+        { _id: new ObjectId(column.boardId) },
+        { $pull: { columnOrderIds: new ObjectId(column._id) } },
+        { returnDocument: "after" }
+      );
+    return result;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const update = async (boardId, updateData) => {
   try {
     // Lọc những field ko muốn cho update linh tinh
@@ -157,4 +172,5 @@ export const boardModel = {
   getDetails,
   pushColumnOrderIds,
   update,
+  pullColumnOrderIds,
 };
