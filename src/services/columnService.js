@@ -1,3 +1,5 @@
+/* eslint-disable quotes */
+/* eslint-disable no-useless-catch */
 /**
  * Updated by trungquandev.com's author on August 17 2023
  * YouTube: https://youtube.com/@trungquandev
@@ -30,6 +32,21 @@ const createNew = async (reqBody) => {
   }
 };
 
+const update = async (columnId, reqBody) => {
+  try {
+    const updateData = {
+      ...reqBody,
+      updatedAt: Date.now(),
+    };
+    const updatedColumn = await columnModel.update(columnId, updateData);
+
+    return updatedColumn;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const columnService = {
   createNew,
+  update,
 };
