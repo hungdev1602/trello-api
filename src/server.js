@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /**
  * Updated by trungquandev.com's author on August 17 2023
  * YouTube: https://youtube.com/@trungquandev
@@ -28,11 +29,19 @@ const START_SERVER = () => {
   // Middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware);
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
-    console.log(
-      `3. Hello ${env.AUTHOR}, Back-End server successfully at Host: http://${env.APP_HOST}:${env.APP_PORT}/`
-    );
-  });
+  if (env.BUILD_MODE === "production") {
+    app.listen(process.env.PORT, () => {
+      console.log(
+        `3. Production: Hello ${env.AUTHOR}, Back-End server successfully at Port: ${env.APP_PORT}`
+      );
+    });
+  } else {
+    app.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+      console.log(
+        `3. Local Dev: Hello ${env.AUTHOR}, Back-End server successfully at Host: ${env.LOCAL_DEV_APP_HOST} and Port: ${env.LOCAL_DEV_APP_PORT}`
+      );
+    });
+  }
 
   // Thực hiện các tác vụ Cleanup trước khi dừng server
   exitHook(() => {
